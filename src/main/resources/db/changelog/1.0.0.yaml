@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1.0.0
+      author: mark.williams
+      changes:
+        - createTable:
+            schemaName: public
+            tableName: note
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: body
+                  type: text
+                  constraints:
+                    nullable: false

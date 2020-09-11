@@ -1,0 +1,52 @@
+git:
+  depth: false
+
+env:
+  global:
+    - PROJECT_NAME=backend-sample
+    - PROJECT_VERSION=$(mvn help:evaluate -Dexpression=project.version -DforceStdout -q)
+
+install: true
+
+stages:
+  - name: build-pr
+    if: branch IN (master) AND type IN (pull_request)
+  - name: build-publish
+    if: branch IN (master) AND type NOT IN (pull_request)
+
+jobs:
+  include:
+    - stage: build-pr
+      name: "Build JAR and test for pull requests"
+      cache:
+        directories:
+          - "$HOME/.m2"
+          - "$HOME/.sonar/cache"
+      services:
+        - docker
+      sudo: required
+      language: java
+      jdk: openjdk11
+      script:
+        - echo "Building JAR and testing"
+        - mvn clean verify -B
+
+    - stage: build-publish
+      name: "Build JAR and test for branch - Publish image to Docker Hub"
+      cache:
+        directories:
+          - "$HOME/.m2"
+          - "$HOME/.sonar/cache"
+      services:
+        - docker
+      sudo: required
+      language: java
+      jdk: openjdk11
+      script:
+        - echo "Building JAR and testing"
+        - mvn clean verify -B
+        - echo "Publishing Docker image to Docker Hub"
+        - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+        - docker build -t $PROJECT_NAME .
+        - docker tag $PROJECT_NAME $DOCKER_USERNAME/$PROJECT_NAME:$PROJECT_VERSION
+        - docker push $DOCKER_USERNAME/$PROJECT_NAME:$PROJECT_VERSION
