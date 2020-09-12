@@ -6,6 +6,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -30,7 +31,6 @@ public class NoteController {
     }
 
     @GetMapping(
-            value = "/",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<List<Note>> get() {
@@ -43,7 +43,7 @@ public class NoteController {
             value = "/{id}",
             produces = MediaType.APPLICATION_JSON_VALUE
     )
-    public ResponseEntity<Note> get(long id) {
+    public ResponseEntity<Note> get(@PathVariable long id) {
         return ResponseEntity.ok(
                 noteRepository.findById(id)
                         .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND))
@@ -51,7 +51,6 @@ public class NoteController {
     }
 
     @PostMapping(
-            value = "/",
             consumes = MediaType.APPLICATION_JSON_VALUE,
             produces = MediaType.APPLICATION_JSON_VALUE
     )
@@ -67,7 +66,7 @@ public class NoteController {
             produces = MediaType.APPLICATION_JSON_VALUE
     )
     public ResponseEntity<Note> update(
-            long id,
+            @PathVariable long id,
             @RequestBody Note note
     ) {
         Note existing = noteRepository.findById(id)
@@ -80,7 +79,7 @@ public class NoteController {
     @DeleteMapping(
             value = "/{id}"
     )
-    public ResponseEntity<Void> delete(long id) {
+    public ResponseEntity<Void> delete(@PathVariable long id) {
         noteRepository.deleteById(id);
         return ResponseEntity.ok()
                 .build();
