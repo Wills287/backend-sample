@@ -4,7 +4,6 @@ databaseChangeLog:
       author: mark.williams
       changes:
         - createTable:
-            schemaName: public
             tableName: note
             columns:
               - column:
